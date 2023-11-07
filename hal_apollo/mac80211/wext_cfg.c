@@ -4174,7 +4174,7 @@ int Test_FreqOffset(struct Sstar_common *hw_priv, u32 *dcxo, int *pfreqErrorHz, 
 	memset(cmd,0,sizeof(cmd));
 	memcpy(cmd, "monitor 0", sizeof(cmd));
 	//stop DUT Rx
-#if 1	
+
 	Sstar_printk_wext("stop DUT Rx CMD:%s\n", cmd);
 	Sstar_for_each_vif(hw_priv,vif,i){
 		if (vif != NULL)
@@ -4198,8 +4198,6 @@ int Test_FreqOffset(struct Sstar_common *hw_priv, u32 *dcxo, int *pfreqErrorHz, 
 				}
 			}
 
-	
-#endif
 	return b_fail;
 }
 
@@ -4454,6 +4452,7 @@ int etf_v2_compare_test_result(void)
 		gthreshold_param.txpwrmax = 65536;
 		if((efuse_data_etf.specific & 0x1))//outerPA(6038)
 		{
+
 
 			gthreshold_param.txpwrmin = -60+gthreshold_param.cableloss;	
 		}

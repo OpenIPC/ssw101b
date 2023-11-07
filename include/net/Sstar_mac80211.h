@@ -5100,10 +5100,10 @@ extern u32 Sstar_printk_mask;
 */
 #define Sstar_printk_err(...) 		Sstar_printk(SSTAR_PRINTK_MASK_ERR,__VA_ARGS__)
 #define Sstar_printk_warn(...)		Sstar_printk(SSTAR_PRINTK_MASK_WARN,__VA_ARGS__)
-#define Sstar_printk_init(...)		Sstar_printk(SSTAR_PRINTK_MASK_INIT,__VA_ARGS__)
+#define Sstar_printk_init(...)		Sstar_printk(SSTAR_PRINTK_MASK_DEBUG,__VA_ARGS__)
 #define Sstar_printk_exit(...)		Sstar_printk(SSTAR_PRINTK_MASK_EXIT,__VA_ARGS__)
 #define Sstar_printk_bus(...)		Sstar_printk(SSTAR_PRINTK_MASK_BUS,__VA_ARGS__)
-#define Sstar_printk_scan(...)		Sstar_printk(SSTAR_PRINTK_MASK_SCAN,__VA_ARGS__)
+#define Sstar_printk_scan(...)		Sstar_printk(SSTAR_PRINTK_MASK_DEBUG,__VA_ARGS__)
 #define Sstar_printk_p2p(...)		Sstar_printk(SSTAR_PRINTK_MASK_P2P,__VA_ARGS__)
 #define Sstar_printk_mgmt(...)		Sstar_printk(SSTAR_PRINTK_MASK_MGMT,__VA_ARGS__)
 #define Sstar_printk_lmac(...)		Sstar_printk(SSTAR_PRINTK_MASK_LMAC,__VA_ARGS__)
