@@ -6,20 +6,27 @@ NOSTDINC_FLAGS := -I$(src)/include/ \
 	-include $(src)/include/linux/compat-2.6.h \
 	-DCOMPAT_STATIC
 
+KBUILD_CFLAGS += -Wno-address
+
 ifneq ($(SSTAR_MAKEFILE_SUB),y)
 export
+
 ifeq ($(CONFIG_SSTAR_MODULE_NAME),)
 CONFIG_SSTAR_MODULE_NAME = Sstar_wifi
 endif
+
 ifeq ($(CONFIG_SSTAR_WIFIIF1_NAME),)
 CONFIG_SSTAR_WIFIIF1_NAME = "wlan%d"
 endif
+
 ifeq ($(CONFIG_SSTAR_WIFIIF2_NAME),)
 CONFIG_SSTAR_WIFIIF2_NAME = "p2p%d"
 endif
+
 ifeq ($(CONFIG_SSTAR_FW_NAME),)
 CONFIG_SSTAR_FW_NAME="fw.bin"
 endif
+
 export
 SDIO_HOST      ?= $(shell echo $(CONFIG_SSTAR_SDIO_MMCx))
 IF1NAME        ?= $(shell echo $(CONFIG_SSTAR_WIFIIF1_NAME))
@@ -52,16 +59,14 @@ PRI_IE         ?= $(CONFIG_SSTAR_FUNC_PRIVE_IE)
 #############################################################
 #SSTAR6041 ONLY USE SDIO
 ifeq ($(CONFIG_HERA),y)
-SDIO_BUS=y
+SDIO_BUS = y
 endif
 ifeq ($(CONFIG_SSTAR_SDIO_24M),y)
 ifeq ($(CONFIG_ATHENAB),y)
-CONFIG_ATHENAB_24M=y
-CONFIG_ATHENAB=n
+CONFIG_ATHENAB_24M = y
+CONFIG_ATHENAB = n
 endif
 endif
-
 endif
  
 obj-$(CONFIG_SSTAR_APOLLO) += hal_apollo/
-

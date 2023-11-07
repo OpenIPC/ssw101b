@@ -1,71 +1,98 @@
-#
-#makefile for build Sstar_wifi.ko
-#
-###############################################################################
-#
-# when release to customer ,the CUSTOMER_SUPPORT_USED must set to y!!!!!!!!!!!!!
-#
-###############################################################################
-CUSTOMER_SUPPORT_USED=y
-###############################################################################
-#PLATFORM_SIGMASTAR                           18
+#############################################################################
+PWD := $(shell pwd)
+WIFI_INSTALL_DIR := $(PWD)/output
+
+NOSTDINC_FLAGS := -I$(src)/include/ \
+	-include $(src)/include/linux/compat-2.6.h \
+	-DCOMPAT_STATIC
+
+#####################################################
 export
-platform ?= PLATFORM_SIGMASTAR
-#Android
-#Linux
-sys ?=Linux
-#arch:arm or arm64
-arch ?= arm
-#export 
-#SSTAR_WIFI__EXT_CCFLAGS = -DSSTAR_WIFI_PLATFORM=$(platform)
+MODULES_NAME = ssw101b_wifi_usb
+CONFIG_FPGA = n
+CONFIG_1601 = n
+CONFIG_1606 = n
+CONFIG_APOLLOC = n
+CONFIG_APOLLOD = n
+CONFIG_APOLLOE = n
+CONFIG_ATHENAA = n
+CONFIG_ATHENAB = n
+CONFIG_ATHENAB_24M = n
+CONFIG_ATHENAC = n
+CONFIG_ATHENALITE = n
+CONFIG_ATHENALITE_ECO = n
+CONFIG_ARES = n
+CONFIG_ARESB = y
+CONFIG_HERA = n
+USB_BUS = y
+SPI_BUS = n
+SDIO_BUS = n
+TX_NO_CONFIRM = n
+MULT_NAME = n
+SSTAR_MAKEFILE_SUB = y
 
-MDIR:=
-export MDIR
+LOAD_FW_H = y
+SKB_DEBUG = n
+MEM_DEBUG = n
+BRIDGE = n
+MONITOR = y
+EARLYSUSPEND = n
+CH5G = y
+USBAGGTX = y
+NOTXCONFIRM = y
+USBDMABUFF = y
+USBCMDENHANCE = y
+USBDATAENHANCE = y
+PMRELODDFW = n
+CHECKSUM = n
+CONFIG_NOT_SUPPORT_40M_CHW = n
 
-ifeq ($(CUSTOMER_SUPPORT_USED),y)
-MAKEFILE_SUB ?= Makefile.build.customer
-else
-MAKEFILE_SUB ?= Makefile.build
+##################################################
+ifeq ($(CONFIG_HERA),y)
+SDIO_BUS = y
 endif
 
-ifeq ($(KERNELRELEASE),)
-ifeq ($(platform),PLATFORM_SIGMASTAR)
-ifeq ($(sys),Linux)
-
-CROSS_COMPILE = /home/builder/Work_OpenIPC/openipc-2.1/output/host/bin/arm-openipc-linux-uclibcgnueabihf-
-LINUX_SRC = ~/Work_OpenIPC/openipc-2.1/output/build/linux-4.9.84
-MDIR = ./output
-else
-
-endif
-export
-arch = arm
-SSTAR_WIFI__EXT_CCFLAGS = -DSSTAR_WIFI_PLATFORM=18
+#####################################################
+export 
+ifeq ($(CONFIG_SSTAR_APOLLO),)
+CONFIG_SSTAR_APOLLO = m
 endif
 
-ifeq ($(platform),PLATFORM_PCX86)
-all:install
-
-install:
-	@echo "make PLATFORM_PCX86"
-	$(MAKE) all -f Makefile.build.local KDIR=$(LINUX_SRC)
-clean:
-	$(MAKE) -f Makefile.build.local KDIR=$(LINUX_SRC) clean
-else
-all:install
-
-install:
-
-	$(warning, "install operation")
-	#@echo "make PLATFORM_CROSS=$(platform)"
-	$(MAKE) all -f $(MAKEFILE_SUB) ARCH=$(arch)  CROSS_COMPILE=$(CROSS_COMPILE) KDIR=$(LINUX_SRC) SYS=$(sys) PLAT=$(platform) -j8
-clean:
-	$(MAKE) -f $(MAKEFILE_SUB) KDIR=$(LINUX_SRC) ARCH=$(arch) clean
-strip:
-	$(MAKE) -f $(MAKEFILE_SUB) KDIR=$(LINUX_SRC) ARCH=$(arch) SYS=$(sys) PLAT=$(platform) strip
-endif
-else
 export
 include $(src)/Makefile.build.kernel
+
+export
+SSTAR_WIFI__EXT_CCFLAGS = -DSSTAR_WIFI_PLATFORM=18
+
+#####################################################
+export
+ifeq ($(CONFIG_MAC80211_SSTAR_RC_MINSTREL),)
+SSTAR_WIFI__EXT_CCFLAGS += -DCONFIG_MAC80211_SSTAR_RC_MINSTREL=1
+CONFIG_MAC80211_SSTAR_RC_MINSTREL = y
 endif
 
+ifeq ($(CONFIG_MAC80211_SSTAR_RC_MINSTREL_HT),)
+SSTAR_WIFI__EXT_CCFLAGS += -DCONFIG_MAC80211_SSTAR_RC_MINSTREL_HT=1
+CONFIG_MAC80211_SSTAR_RC_MINSTREL_HT = y
+endif
+
+ifeq ($(USB_BUS),y)
+HIF := usb
+endif
+
+ifeq ($(SDIO_BUS),y)
+HIF := sdio
+endif
+
+ifeq ($(SPI_BUS),y)
+HIF := spi
+endif
+
+modules:					
+	$(MAKE) ARCH=$(ARCH) CROSS_COMPILE=$(CROSS_COMPILE) -C $(KDIR) M=$(shell pwd) modules -j8
+
+strip:
+	$(CROSS_COMPILE)strip $(WIFI_INSTALL_DIR)/$(MODULES_NAME).ko --strip-unneeded
+
+clean:
+	make -C $(KDIR) M=$(PWD) ARCH=$(ARCH) clean
