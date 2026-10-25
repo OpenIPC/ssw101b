@@ -7,7 +7,24 @@ NOSTDINC_FLAGS := -I$(src)/include/ \
 	-DCOMPAT_STATIC
 
 #####################################################
-export
+# Export this driver's own settings by name, never everything. kbuild reads
+# this file as the module's Makefile, so a bare `export` also exported every
+# kbuild variable, multi_depend among them. GNU make 4.4 passes exported
+# variables to $(shell ...), which expands them, so its $(eval) defined a
+# rule mid-parse: "scripts/Makefile.lib:402: *** prerequisites cannot be
+# defined in recipes". make 4.3 builds the same module either way.
+export BRIDGE CH5G CHECKSUM CONFIG_1601 CONFIG_1606 CONFIG_APOLLOC \
+	CONFIG_APOLLOD CONFIG_APOLLOE CONFIG_ARES CONFIG_ARESB CONFIG_ATHENAA \
+	CONFIG_ATHENAB CONFIG_ATHENAB_24M CONFIG_ATHENAC CONFIG_ATHENALITE \
+	CONFIG_ATHENALITE_ECO CONFIG_FPGA CONFIG_HERA \
+	CONFIG_MAC80211_SSTAR_RC_MINSTREL CONFIG_MAC80211_SSTAR_RC_MINSTREL_HT \
+	CONFIG_NOT_SUPPORT_40M_CHW CONFIG_SSTAR_APOLLO CONFIG_SSTAR_FW_NAME \
+	CONFIG_SSTAR_MODULE_NAME CONFIG_SSTAR_WIFIIF1_NAME \
+	CONFIG_SSTAR_WIFIIF2_NAME DRVLOADERFAST EARLYSUSPEND FW HIF IF1NAME IF2NAME \
+	KBUILD_CFLAGS LOAD_FW_H MEM_DEBUG MODULES_NAME MONITOR MULT_NAME \
+	NOSTDINC_FLAGS NOTXCONFIRM PMRELODDFW PRI_IE PWD SDIO_BUS SDIO_HOST \
+	SKB_DEBUG SPI_BUS SSTAR_MAKEFILE_SUB SSTAR_WIFI__EXT_CCFLAGS TX_NO_CONFIRM \
+	USBAGGTX USBCMDENHANCE USBDATAENHANCE USBDMABUFF USB_BUS WIFI_INSTALL_DIR
 MODULES_NAME = ssw101b_wifi_usb
 CONFIG_FPGA = n
 CONFIG_1601 = n
@@ -53,19 +70,15 @@ SDIO_BUS = y
 endif
 
 #####################################################
-export 
 ifeq ($(CONFIG_SSTAR_APOLLO),)
 CONFIG_SSTAR_APOLLO = m
 endif
 
-export
 include $(src)/Makefile.build.kernel
 
-export
 SSTAR_WIFI__EXT_CCFLAGS = -DSSTAR_WIFI_PLATFORM=18
 
 #####################################################
-export
 ifeq ($(CONFIG_MAC80211_SSTAR_RC_MINSTREL),)
 SSTAR_WIFI__EXT_CCFLAGS += -DCONFIG_MAC80211_SSTAR_RC_MINSTREL=1
 CONFIG_MAC80211_SSTAR_RC_MINSTREL = y
